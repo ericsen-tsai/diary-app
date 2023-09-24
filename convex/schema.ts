@@ -6,4 +6,10 @@ export default defineSchema({
     name: v.string(),
     tokenIdentifier: v.string(),
   }).index('by_token', ['tokenIdentifier']),
+  diaries: defineTable({
+    user: v.id('users'),
+    updatedTime: v.optional(v.number()),
+    content: v.string(),
+    mood: v.optional(v.union(v.literal('sad'), v.literal('happy'), v.literal('neutral'), v.literal('unknown'))),
+  }),
 })
