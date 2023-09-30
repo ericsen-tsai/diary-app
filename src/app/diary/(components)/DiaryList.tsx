@@ -5,17 +5,10 @@
 import { useMutation } from 'convex/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { type Id } from '../../../../convex/_generated/dataModel'
+import { type Doc } from '../../../../convex/_generated/dataModel'
 import { api } from '../../../../convex/_generated/api'
 
-export type Diary = {
-  _id: Id<'diaries'>
-  _creationTime: number
-  updatedTime?: number | undefined
-  mood?: 'sad' | 'happy' | 'neutral' | 'unknown' | undefined
-  user: Id<'users'>
-  content: string
-}
+export type Diary = Doc<'diaries'>
 
 function getTitle(md: string) {
   if (!md) return ''
