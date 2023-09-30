@@ -17,6 +17,7 @@ import { type Doc, type Id } from '../../../../convex/_generated/dataModel'
 
 function EditArea({ diary }: { diary: Doc<'diaries'> }) {
   const [source, setSource] = useState<string>(diary.content)
+  const [showEdit, setShowEdit] = useState<boolean>(true)
   const debouncedSource = useDebounce<string>(source, 1000)
   const updateDiary = useMutation(api.diaries.updateDiary)
 
@@ -47,24 +48,31 @@ function EditArea({ diary }: { diary: Doc<'diaries'> }) {
           'yyyy-MM-dd HH:mm:ss',
         )}
       </p>
-      <div className="flex max-h-[80vh] min-w-[80vw] gap-3">
+      <div className="flex max-h-[80vh] min-h-[60vh] min-w-[80vw] gap-3">
+        {showEdit && (
         <textarea
-          rows={20}
+          rows={5}
           value={source}
           onChange={(e) => {
             setSource(e.target.value)
           }}
-          className="basis-1/2 rounded-lg bg-slate-50 p-3 text-black"
+          className="flex-1 rounded-lg bg-slate-50 px-6 py-5 text-black"
           placeholder="please enter your content here"
         />
+        )}
         <MarkdownPreview
           source={source}
-          className="basis-1/2 overflow-y-auto rounded-lg p-3 !font-[inherit] [&>ol]:!list-decimal [&>ul]:!list-disc"
+          className="flex-1 self-stretch overflow-y-auto rounded-lg px-6 py-5 !font-[inherit] [&>ol]:!list-decimal [&>ul]:!list-disc"
           wrapperElement={{
             'data-color-mode': 'light',
           }}
         />
       </div>
+      <button type="button" onClick={() => { setShowEdit((prev) => !prev) }}>
+        {showEdit ? 'Hide' : 'Show'}
+        {' '}
+        Edit
+      </button>
     </>
   )
 }
