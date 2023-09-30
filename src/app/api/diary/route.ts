@@ -11,5 +11,5 @@ export async function GET() {
   const token = await getToken({ template: 'convex' })
   convex.setAuth(token || '')
   const diaries = await convex.query(api.diaries.getDiaries)
-  return NextResponse.json({ diaries: diaries || [] })
+  return NextResponse.json(diaries)
 }

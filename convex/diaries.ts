@@ -77,6 +77,7 @@ export const updateDiary = mutation({
   args: {
     id: v.id('diaries'),
     content: v.string(),
+    updatedTime: v.optional(v.number()),
     mood: v.optional(
       v.union(
         v.literal('sad'),
