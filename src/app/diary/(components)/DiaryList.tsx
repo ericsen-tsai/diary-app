@@ -5,6 +5,8 @@
 import { useMutation } from 'convex/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { format } from 'date-fns'
+
 import { type Doc } from '../../../../convex/_generated/dataModel'
 import { api } from '../../../../convex/_generated/api'
 
@@ -41,7 +43,7 @@ function DiaryList({ diaries }: { diaries: Diary[] }) {
       <ul>
         {diaries.map((diary) => (
           <li key={diary._id} className="flex gap-3">
-            <p>{getTitle(diary.content) || `Diary ${diary._creationTime}}`}</p>
+            <p>{getTitle(diary.content) || `Diary ${format(diary._creationTime, 'yyyy-MM-dd')}`}</p>
             <Link href={`/diary/${diary._id}`}>Edit</Link>
           </li>
         ))}

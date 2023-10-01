@@ -1,13 +1,21 @@
 /* eslint-disable no-underscore-dangle */
 import { v } from 'convex/values'
-import { mutation, query } from './_generated/server'
+import { type Id } from './_generated/dataModel'
+import {
+  mutation,
+  query,
+  type QueryCtx,
+  type MutationCtx,
+} from './_generated/server'
 
-export const getDiaries = query({
-  args: {},
-  handler: async (ctx) => {
+type Context = QueryCtx | MutationCtx
+
+const isAuthed = <T, P extends Record<string, unknown>, C extends Context>(
+  next: (ctx: C & { userId: Id<'users'> }, args: P) => Promise<T> | T,
+) => async (ctx: C, args: P) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new Error('Called getDairies without authentication present')
+      throw new Error(`Called ${next.name} without authentication present`)
     }
 
     const user = await ctx.db
@@ -15,62 +23,45 @@ export const getDiaries = query({
       .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
       .unique()
     if (!user) {
-      throw new Error('Unauthenticated call to query')
+      throw new Error('Unrecognized user')
     }
+
+    return next({ ...ctx, userId: user._id }, args)
+  }
+
+export const getDiaries = query({
+  args: {},
+  handler: isAuthed(async (ctx) => {
     const diaries = await ctx.db
       .query('diaries')
-      .filter((q) => q.eq(q.field('user'), user._id))
+      .filter((q) => q.eq(q.field('user'), ctx.userId))
       .collect()
     return diaries
-  },
+  }),
 })
 
 export const getDiary = query({
   args: { id: v.id('diaries') },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Called getDiary without authentication present')
-    }
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
-      .unique()
-    if (!user) {
-      throw new Error('Unauthenticated call to query')
-    }
+  handler: isAuthed(async (ctx, args) => {
     const diary = await ctx.db.get(args.id)
-    if (diary?.user !== user._id) {
+    if (diary?.user !== ctx.userId) {
       throw new Error('Unauthenticated call to query')
     }
     return diary
-  },
+  }),
 })
 
 export const createDiary = mutation({
   args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Called createDiary without authentication present')
-    }
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
-      .unique()
-    if (!user) {
-      throw new Error('Unauthenticated call to mutation')
-    }
+  handler: isAuthed(async (ctx) => {
     const diaryId = await ctx.db.insert('diaries', {
       content: '',
       mood: 'neutral',
-      user: user._id,
+      user: ctx.userId,
     })
 
     return diaryId
-  },
+  }),
 })
 
 export const updateDiary = mutation({
@@ -87,19 +78,7 @@ export const updateDiary = mutation({
       ),
     ),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Called updateDiary without authentication present')
-    }
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
-      .unique()
-    if (!user) {
-      throw new Error('Unauthenticated call to mutation')
-    }
+  handler: isAuthed(async (ctx, args) => {
     await ctx.db.patch(args.id, {
       mood: args.mood,
       content: args.content,
@@ -107,28 +86,16 @@ export const updateDiary = mutation({
     })
 
     return args.id
-  },
+  }),
 })
 
 export const deleteDiary = mutation({
   args: {
     id: v.id('diaries'),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Called deleteDiary without authentication present')
-    }
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
-      .unique()
-    if (!user) {
-      throw new Error('Unauthenticated call to mutation')
-    }
+  handler: isAuthed(async (ctx, args) => {
     await ctx.db.delete(args.id)
 
     return args.id
-  },
+  }),
 })
