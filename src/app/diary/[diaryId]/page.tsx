@@ -69,9 +69,11 @@ function EditArea({ diary }: { diary: Doc<'diaries'> }) {
         />
       </div>
       <button type="button" onClick={() => { setShowEdit((prev) => !prev) }}>
-        {showEdit ? 'Hide' : 'Show'}
+        Turn
         {' '}
-        Edit
+        {showEdit ? 'On' : 'Off'}
+        {' '}
+        Reading Mode
       </button>
     </>
   )
