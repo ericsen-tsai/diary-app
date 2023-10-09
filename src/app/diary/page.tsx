@@ -14,11 +14,12 @@ function getTitle(md: string) {
 }
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 async function Diary() {
   const res = await fetch('http://localhost:3000/api/diary', {
     headers: headers(),
-    cache: 'no-cache',
+    cache: 'no-store',
   })
 
   const diaries = (await res.json()) as Diary[]
@@ -29,8 +30,8 @@ async function Diary() {
       || `Diary ${format(diary._creationTime, 'yyyy-MM-dd')}`,
   }))
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      <div className="min-w-[80vw] rounded-md border p-3">
+    <main className="flex min-h-screen flex-col items-center p-12">
+      <div className="w-full max-w-[50rem] rounded-md border p-3">
         <DiaryDataTable data={diariesWithTitle} />
       </div>
     </main>
