@@ -25,7 +25,7 @@ function MainNav() {
           href="/diary"
           className={cn(
             'transition-colors hover:text-foreground/80',
-            pathname?.startsWith('/examples')
+            pathname?.startsWith('/diary')
               ? 'text-foreground'
               : 'text-foreground/60',
           )}
