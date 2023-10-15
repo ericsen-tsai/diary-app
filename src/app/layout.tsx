@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import NextTopLoader from 'nextjs-toploader'
 
 import { ConvexClientProvider, ThemeProvider, SiteHeader } from '@/components'
 import { ClerkProvider } from '@clerk/nextjs'
@@ -23,6 +24,7 @@ export default function RootLayout({
     <ClerkProvider publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html lang="en">
         <body className={inter.className}>
+          <NextTopLoader color="#D0D1D4" />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

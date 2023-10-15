@@ -1,17 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import { headers } from 'next/headers'
 import { format } from 'date-fns'
+
+import getTitle from '@/utils/getTitle'
 import DiaryDataTable from './(components)/DiaryDataTable'
 import { Diary } from './(components)/DiaryDataTable/columns'
-
-function getTitle(md: string) {
-  if (!md) return ''
-  const tokens = md.split('\n')
-  for (let i = 0; i < tokens.length; i += 1) {
-    if (/^#\s+.+/.test(tokens[i])) return tokens[i].split('# ')[1]
-  }
-  return ''
-}
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

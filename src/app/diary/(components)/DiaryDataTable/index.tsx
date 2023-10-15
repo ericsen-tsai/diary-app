@@ -18,9 +18,11 @@ import { useMutation } from 'convex/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { PlusCircle } from 'lucide-react'
+import { useState } from 'react'
 import { api } from '../../../../../convex/_generated/api'
 import { type DiaryWithTitle, columns } from './columns'
 import DataTableViewOptions from './DataTableViewOptions'
+import DataTablePagination from './DataTablePagination'
 
 type Props = {
   data: DiaryWithTitle[]
@@ -30,10 +32,14 @@ function DiaryDataTable({
   data,
 }: Props) {
   const createDiary = useMutation(api.diaries.createDiary)
+  const [loading, setLoading] = useState<boolean>(false)
+
   const router = useRouter()
 
   const handleCreateDiary = async () => {
+    setLoading(true)
     const newDiaryId = await createDiary()
+    setLoading(false)
     router.push(`/diary/${newDiaryId}`)
   }
   const table = useReactTable({
@@ -93,10 +99,12 @@ function DiaryDataTable({
         onClick={() => {
           void handleCreateDiary()
         }}
-        className="mt-3"
+        className="my-3"
+        disabled={loading}
       >
         <PlusCircle />
       </Button>
+      <DataTablePagination table={table} />
     </div>
   )
 }

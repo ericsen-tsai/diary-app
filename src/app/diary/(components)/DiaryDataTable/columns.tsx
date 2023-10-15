@@ -47,6 +47,16 @@ export const columns: ColumnDef<DiaryWithTitle>[] = [
     accessorKey: 'title',
     header: ACCESSOR_KEY_TO_TITLE_MAP.title,
     enableHiding: false,
+    cell: ({ row }) => {
+      const diary = row.original
+      return (
+        <div className="max-w-[12rem] truncate font-medium">
+          <Link href={`/diary/${diary._id}`}>
+            {row.getValue('title')}
+          </Link>
+        </div>
+      )
+    },
   },
   {
     accessorKey: '_creationTime',

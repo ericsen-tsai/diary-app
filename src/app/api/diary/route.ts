@@ -7,7 +7,6 @@ import { api } from '../../../../convex/_generated/api'
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL)
 
 export async function GET() {
-  console.log('has been called!')
   const { getToken } = auth()
   const token = await getToken({ template: 'convex' })
   convex.setAuth(token || '')
